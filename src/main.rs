@@ -2,12 +2,7 @@ mod game;
 
 use macroquad::prelude::*;
 use game::asteroid::Asteroid;
-
-struct Player {
-    position: Vec2,
-    rotation: f32,
-    velocity: Vec2
-}
+use game::player::Player;
 
 struct Bullet {
     position: Vec2,
@@ -28,8 +23,13 @@ struct Collision {
 
 #[macroquad::main("asteroids")]
 async fn main() {
+    let mut player = Player::new();
     let mut asteroids = Vec::new();
+
     loop {
+        player.move_from_keys();
+        player.draw();
+
         if asteroids.len() < 10 {
             for _ in 0..10 {
                 asteroids.push(Asteroid::new())
@@ -49,6 +49,7 @@ async fn main() {
         for asteroid in asteroids.iter_mut() {
             asteroid.update_position()
         }
+
         next_frame().await;
     }
 }

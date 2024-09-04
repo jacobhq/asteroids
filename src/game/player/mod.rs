@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
-use crate::game;
+use crate::game::utils::wrap_around;
+use crate::game::bullet::Bullet;
 
 const PLAYER_HEIGHT: f32 = 25.;
 const PLAYER_BASE: f32 = 22.;
@@ -36,12 +37,20 @@ impl Player {
         draw_triangle_lines(v1, v2, v3, 2., WHITE);
     }
 
-    pub fn move_from_keys(&mut self) {
+    pub fn move_from_keys(&mut self, bullets: &mut Vec<Bullet>, last_shot: &mut f64) {
         let mut acceleration = -self.velocity / 50.;
         let rotation = self.rotation.to_radians();
+        let frame_t = get_time();
 
         if is_key_down(KeyCode::Up) {
             acceleration = Vec2::new(rotation.sin(), -rotation.cos()) / 3.;
+        }
+        
+        if is_key_down(KeyCode::Space) && frame_t - last_shot.clone() > 0.5 {
+            println!("space");
+            let rot_vec = Vec2::new(rotation.sin(), -rotation.cos());
+            bullets.push(Bullet::new(self.position, rot_vec, frame_t, PLAYER_HEIGHT));
+            *last_shot = frame_t;
         }
 
         if is_key_down(KeyCode::Right) {
@@ -56,6 +65,6 @@ impl Player {
             self.velocity = self.velocity.normalize() * 5.;
         }
         self.position += self.velocity;
-        self.position = game::utils::wrap_around(&self.position);
+        self.position = wrap_around(&self.position);
     }
 }

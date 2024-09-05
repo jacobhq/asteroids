@@ -2,8 +2,8 @@ use macroquad::prelude::*;
 use crate::game::utils::wrap_around;
 use crate::game::bullet::Bullet;
 
-const PLAYER_HEIGHT: f32 = 25.;
-const PLAYER_BASE: f32 = 22.;
+pub const PLAYER_HEIGHT: f32 = 25.;
+pub const PLAYER_BASE: f32 = 22.;
 
 pub struct Player {
     pub position: Vec2,
@@ -66,5 +66,9 @@ impl Player {
         }
         self.position += self.velocity;
         self.position = wrap_around(&self.position);
+    }
+
+    pub fn die(&self) {
+        todo!()
     }
 }

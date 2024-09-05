@@ -2,18 +2,8 @@ mod game;
 
 use macroquad::prelude::*;
 use game::asteroid::Asteroid;
-use game::bullet::Bullet;
 use game::player::Player;
-
-enum CollisionTypes {
-    Player(Player),
-    Asteroid(Asteroid),
-    Bullet(Bullet)
-}
-
-struct Collision {
-    objects: Vec<CollisionTypes>
-}
+use crate::game::player::PLAYER_HEIGHT;
 
 #[macroquad::main("asteroids")]
 async fn main() {
@@ -56,6 +46,36 @@ async fn main() {
         for bullet in bullets.iter_mut() {
             bullet.update_position();
         }
+
+        let mut new_asteroids = Vec::new();
+        for asteroid in asteroids.iter_mut() {
+            // Asteroid/ship collision
+            if (asteroid.position - player.position).length() < asteroid.size + PLAYER_HEIGHT / 3. {
+                println!("gameover");
+                break;
+            }
+
+            // Asteroid/bullet collision
+            for bullet in bullets.iter_mut() {
+                if (asteroid.position - bullet.position).length() < asteroid.size {
+                    asteroid.collided = true;
+                    bullet.collided = true;
+
+                    // Break the asteroid
+                    if asteroid.sides > 3 {
+                        new_asteroids.push(Asteroid::new());
+                        new_asteroids.push(Asteroid::new())
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Remove the collided objects
+        bullets.retain(|bullet| bullet.shot_at + 1.5 > frame_t && !bullet.collided);
+        asteroids.retain(|asteroid| !asteroid.collided);
+        asteroids.append(&mut new_asteroids);
+
 
         next_frame().await;
     }

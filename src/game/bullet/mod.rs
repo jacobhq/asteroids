@@ -1,10 +1,10 @@
 use macroquad::prelude::*;
 
 pub struct Bullet {
-    position: Vec2,
-    velocity: Vec2,
+    pub position: Vec2,
+    pub velocity: Vec2,
     pub shot_at: f64,
-    collided: bool,
+    pub collided: bool,
 }
 
 impl Bullet {

@@ -7,7 +7,8 @@ pub struct Asteroid {
     rotation_speed: f32,
     velocity: Vec2,
     pub(crate) sides: u8,
-    pub(crate) size: f32
+    pub(crate) size: f32,
+    pub(crate) collided: bool
 }
 
 impl Asteroid {
@@ -24,7 +25,8 @@ impl Asteroid {
             rotation_speed: rand::gen_range(-2., 2.),
             velocity: Vec2::new(rand::gen_range(-1., 1.), rand::gen_range(-1., 1.)),
             sides: rand::gen_range(3, 8),
-            size: screen_width().min(screen_height()) / 10.
+            size: screen_width().min(screen_height()) / 10.,
+            collided: false
         }
     }
 

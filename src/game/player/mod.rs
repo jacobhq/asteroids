@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 use crate::game::utils::wrap_around;
 use crate::game::bullet::Bullet;
+use std::{thread, time};
 
 pub const PLAYER_HEIGHT: f32 = 25.;
 pub const PLAYER_BASE: f32 = 22.;
@@ -68,6 +69,12 @@ impl Player {
     }
 
     pub fn die(&self) {
-        todo!()
+        let ten_seconds = time::Duration::from_millis(100);
+
+        clear_background(RED);
+
+        draw_text("YOU DIED", screen_width() / 2., screen_height() / 2., 96., DARKGRAY);
+
+        thread::sleep(ten_seconds);
     }
 }

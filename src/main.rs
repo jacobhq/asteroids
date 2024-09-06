@@ -1,7 +1,7 @@
 mod game;
 
 use macroquad::prelude::*;
-use game::asteroid::Asteroid;
+use game::asteroid::{Asteroid, AsteroidPosition};
 use game::player::Player;
 use crate::game::player::PLAYER_HEIGHT;
 
@@ -22,7 +22,7 @@ async fn main() {
 
         if asteroids.len() < 10 {
             for _ in 0..10 {
-                asteroids.push(Asteroid::new())
+                asteroids.push(Asteroid::new(AsteroidPosition::Center))
             }
         }
         for asteroid in asteroids.iter() {
@@ -51,7 +51,7 @@ async fn main() {
         for asteroid in asteroids.iter_mut() {
             // Asteroid/ship collision
             if (asteroid.position - player.position).length() < asteroid.size + PLAYER_HEIGHT / 3. {
-                println!("gameover");
+                player.die();
                 break;
             }
 
@@ -62,10 +62,7 @@ async fn main() {
                     bullet.collided = true;
 
                     // Break the asteroid
-                    if asteroid.sides > 3 {
-                        new_asteroids.push(Asteroid::new());
-                        new_asteroids.push(Asteroid::new())
-                    }
+                    asteroid.get_hit_and_split(bullet, &mut new_asteroids);
                     break;
                 }
             }

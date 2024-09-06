@@ -47,7 +47,6 @@ impl Player {
         }
         
         if is_key_down(KeyCode::Space) && frame_t - last_shot.clone() > 0.5 {
-            println!("space");
             let rot_vec = Vec2::new(rotation.sin(), -rotation.cos());
             bullets.push(Bullet::new(self.position, rot_vec, frame_t, PLAYER_HEIGHT));
             *last_shot = frame_t;

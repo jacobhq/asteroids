@@ -39,6 +39,18 @@ impl Asteroid {
         }
     }
     
+    pub(crate) fn draw(&self) {
+        draw_poly_lines(
+            self.position.x,
+            self.position.y,
+            self.sides,
+            self.size,
+            self.rotation,
+            2.,
+            WHITE,
+        )
+    }
+    
     pub(crate) fn get_hit_and_split(&mut self, bullet: &mut Bullet, new_asteroids: &mut Vec<Asteroid>) {
         if (self.position - bullet.position).length() < self.size {
             self.collided = true;

@@ -26,15 +26,7 @@ async fn main() {
             }
         }
         for asteroid in asteroids.iter() {
-            draw_poly_lines(
-                asteroid.position.x,
-                asteroid.position.y,
-                asteroid.sides,
-                asteroid.size,
-                asteroid.rotation,
-                2.,
-                WHITE,
-            )
+            asteroid.draw()
         }
         for asteroid in asteroids.iter_mut() {
             asteroid.update_position()

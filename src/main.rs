@@ -61,7 +61,7 @@ async fn main() {
         }
 
         // Remove the collided objects
-        bullets.retain(|bullet| bullet.shot_at + 1.5 > frame_t && !bullet.collided);
+        bullets.retain(|bullet| bullet.shot_at + 5.0 > frame_t && !bullet.collided);
         asteroids.retain(|asteroid| !asteroid.collided);
         asteroids.append(&mut new_asteroids);
 

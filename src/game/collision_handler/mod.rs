@@ -16,9 +16,11 @@ impl Collision {
     pub fn collide(collision_type: CollisionType) {
         match collision_type { 
             CollisionType::PlayerAsteroid(player, asteroid) => { 
-                player.die()
+                player.die();
             },
-            CollisionType::BulletAsteroid(bullet, asteroid) => { unimplemented!() }
+            CollisionType::BulletAsteroid(bullet, asteroid) => {
+                unimplemented!()
+            }
         }
     }
 }

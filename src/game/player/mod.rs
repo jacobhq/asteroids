@@ -71,10 +71,18 @@ impl Player {
     pub fn die(&self) {
         let ten_seconds = time::Duration::from_millis(100);
 
-        clear_background(RED);
-
-        draw_text("YOU DIED", screen_width() / 2., screen_height() / 2., 96., DARKGRAY);
-
+        clear_background(LIGHTGRAY);
+        let text = "You Died!. Press [enter] to play again.";
+        let font_size = 30.;
+        
+        let text_size = measure_text(text, None, font_size as _, 1.0);
+        draw_text(
+            text,
+            screen_width() / 2. - text_size.width / 2.,
+            screen_height() / 2. - text_size.height / 2.,
+            font_size,
+            DARKGRAY,
+        );
         thread::sleep(ten_seconds);
     }
 }

@@ -4,6 +4,11 @@ use macroquad::prelude::*;
 use game::asteroid::{Asteroid, AsteroidPosition};
 use game::player::Player;
 use crate::game::player::PLAYER_HEIGHT;
+use macroquad::ui::{
+    hash, root_ui,
+    widgets::{self, Group},
+    Drag, Ui,
+};
 
 #[macroquad::main("asteroids")]
 async fn main() {
@@ -11,8 +16,29 @@ async fn main() {
     let mut bullets = Vec::new();
     let mut asteroids = Vec::new();
     let mut last_shot = get_time();
+    let mut score: u32 = 0;
 
     loop {
+        // widgets::Window::new(hash!(), vec2(100., 220.), vec2(542., 430.))
+        //     .label("Fitting window")
+        //     .titlebar(true)
+        //     .ui(&mut *root_ui(), |ui| {
+        //         Group::new(hash!(), Vec2::new(230., 400.)).ui(ui, |ui| {
+        //
+        //         });
+        //         Group::new(hash!(), Vec2::new(280., 400.)).ui(ui, |ui| {
+        //
+        //         });
+        //     });
+
+        {
+            let text: &str = &format!("{}", score);
+            let font_size = 64.;
+
+            let text_size = measure_text(text, None, font_size as _, 1.0);
+            draw_text(text, 16., 16. + text_size.height, font_size, WHITE);
+        }
+
         player.move_from_keys(&mut bullets, &mut last_shot);
         player.draw();
 
@@ -52,6 +78,8 @@ async fn main() {
                 if (asteroid.position - bullet.position).length() < asteroid.size {
                     asteroid.collided = true;
                     bullet.collided = true;
+
+                    score += 1;
 
                     // Break the asteroid
                     asteroid.get_hit_and_split(bullet, &mut new_asteroids);

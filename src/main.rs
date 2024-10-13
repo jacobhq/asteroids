@@ -34,6 +34,14 @@ async fn main() {
                 player.move_from_keys(&mut bullets, &mut last_shot);
                 player.draw();
 
+                {
+                    let text: &str = &format!("{}", score);
+                    let font_size = 64.;
+
+                    let text_size = measure_text(text, None, font_size as _, 1.0);
+                    draw_text(text, 16., 16. + text_size.height, font_size, WHITE);
+                }
+
                 let frame_t = get_time();
 
                 bullets.retain(|bullet| bullet.shot_at + 1.5 > frame_t);
@@ -81,7 +89,7 @@ async fn main() {
                 }
 
                 // Remove the collided objects
-                bullets.retain(|bullet| bullet.shot_at + 5.0 > frame_t && !bullet.collided);
+                bullets.retain(|bullet| bullet.shot_at + 1.5 > frame_t && !bullet.collided);
                 asteroids.retain(|asteroid| !asteroid.collided);
                 asteroids.append(&mut new_asteroids);
 
@@ -106,15 +114,16 @@ async fn main() {
             }
             _ => {
                 widgets::Window::new(hash!(), vec2(100., 220.), vec2(542., 430.))
-                    .label("Fitting window")
+                    .label("Asteroids Rust Implementation - Jacob Marshall")
                     .titlebar(true)
-                    .ui(&mut *root_ui(), |ui| {
-                        if Button::new("Hello").ui(ui) {
-                            game_state = GameState::Playing
+                    .ui(&mut root_ui(), |ui| {
+                        if Button::new("Play Game").ui(ui) {
+                            asteroids.clear();
+                            bullets.clear();
+                            player.reset();
+                            score = 0;
+                            game_state = GameState::Playing;
                         }
-                        Group::new(hash!(), Vec2::new(280., 400.)).ui(ui, |ui| {
-
-                        });
                     });
             }
         }

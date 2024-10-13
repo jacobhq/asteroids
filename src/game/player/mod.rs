@@ -1,7 +1,6 @@
 use macroquad::prelude::*;
 use crate::game::utils::wrap_around;
 use crate::game::bullet::Bullet;
-use std::{thread, time};
 
 pub const PLAYER_HEIGHT: f32 = 25.;
 pub const PLAYER_BASE: f32 = 22.;
@@ -68,21 +67,9 @@ impl Player {
         self.position = wrap_around(&self.position);
     }
 
-    pub fn die(&self) {
-        let ten_seconds = time::Duration::from_millis(100);
-
-        clear_background(LIGHTGRAY);
-        let text = "You Died!. Press [enter] to play again.";
-        let font_size = 30.;
-        
-        let text_size = measure_text(text, None, font_size as _, 1.0);
-        draw_text(
-            text,
-            screen_width() / 2. - text_size.width / 2.,
-            screen_height() / 2. - text_size.height / 2.,
-            font_size,
-            DARKGRAY,
-        );
-        thread::sleep(ten_seconds);
+    pub fn reset(&mut self) {
+        self.position = Vec2::new(screen_width() / 2., screen_height() / 2.);
+        self.rotation = 0.;
+        self.velocity = Vec2::new(0., 0.);
     }
 }

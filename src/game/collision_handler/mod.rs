@@ -15,8 +15,8 @@ struct Collision {
 impl Collision {
     pub fn collide(collision_type: CollisionType) {
         match collision_type { 
-            CollisionType::PlayerAsteroid(player, asteroid) => { 
-                player.die();
+            CollisionType::PlayerAsteroid(mut player, asteroid) => { 
+                player.reset();
             },
             CollisionType::BulletAsteroid(bullet, asteroid) => {
                 unimplemented!()

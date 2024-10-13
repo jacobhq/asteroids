@@ -5,11 +5,7 @@ use macroquad::prelude::*;
 use game::asteroid::{Asteroid, AsteroidPosition};
 use game::player::Player;
 use crate::game::player::PLAYER_HEIGHT;
-use macroquad::ui::{
-    hash, root_ui,
-    widgets::{self, Group},
-    Drag, Ui,
-};
+use macroquad::ui::{hash, root_ui, widgets::{self, Group}, Drag, Skin, Ui};
 use macroquad::ui::widgets::Button;
 
 enum GameState {
@@ -19,7 +15,7 @@ enum GameState {
     GameOver,
 }
 
-# [macroquad::main("asteroids")]
+#[macroquad::main("asteroids")]
 async fn main() {
     let mut player = Player::new();
     let mut bullets = Vec::new();

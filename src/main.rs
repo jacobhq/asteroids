@@ -113,11 +113,19 @@ async fn main() {
                 );
             }
             _ => {
-                widgets::Window::new(hash!(), vec2(100., 220.), vec2(542., 430.))
+                let window_size = vec2(542., 430.);
+                let button_size = vec2(window_size.x - 20., 50.);
+
+                widgets::Window::new(hash!(), vec2(
+                    screen_width() / 2.0 - window_size.x / 2.0,
+                    screen_height() / 2.0 - window_size.y / 2.0,
+                ), window_size)
                     .label("Asteroids Rust Implementation - Jacob Marshall")
                     .titlebar(true)
                     .ui(&mut root_ui(), |ui| {
-                        if Button::new("Play Game").ui(ui) {
+                        if Button::new("Play Game").size(button_size).position(vec2(
+                            10., 10.
+                        )).ui(ui) {
                             asteroids.clear();
                             bullets.clear();
                             player.reset();

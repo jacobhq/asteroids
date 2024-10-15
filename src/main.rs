@@ -30,6 +30,10 @@ async fn main() {
                 player.move_from_keys(&mut bullets, &mut last_shot);
                 player.draw();
 
+                if is_key_down(KeyCode::Escape) {
+                    game_state = GameState::MainMenu;
+                }
+
                 {
                     let text: &str = &format!("{}", score);
                     let font_size = 64.;

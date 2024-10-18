@@ -1,4 +1,5 @@
 mod game;
+mod api;
 
 use std::{thread, time};
 use macroquad::prelude::*;
@@ -7,92 +8,60 @@ use game::player::Player;
 use crate::game::player::PLAYER_HEIGHT;
 use macroquad::ui::{hash, root_ui, widgets::{self, Group}, Drag, Skin, Ui};
 use macroquad::ui::widgets::Button;
+use crate::api::score_point;
+use crate::game::{AsteroidsGame, GameOutcome, GameType};
 
 enum GameState {
     MainMenu,
     Playing,
     Paused,
     GameOver,
+    LiveMode,
 }
 
 #[macroquad::main("asteroids")]
 async fn main() {
-    let mut player = Player::new();
-    let mut bullets = Vec::new();
-    let mut asteroids = Vec::new();
-    let mut last_shot = get_time();
-    let mut score: u32 = 0;
     let mut game_state: GameState = GameState::MainMenu;
+    let mut game_id: String = "".to_string();
+    let mut player_id: String = "".to_string();
+    let mut game: Option<AsteroidsGame> = None;
 
     loop {
         match game_state {
-            GameState::Playing => {
-                player.move_from_keys(&mut bullets, &mut last_shot);
-                player.draw();
+            GameState::MainMenu => {
+                let window_size = vec2(542., 430.);
+                let button_size = vec2(window_size.x - 20., 50.);
 
-                if is_key_down(KeyCode::Escape) {
+                widgets::Window::new(hash!(), vec2(
+                    screen_width() / 2.0 - window_size.x / 2.0,
+                    screen_height() / 2.0 - window_size.y / 2.0,
+                ), window_size)
+                    .label("Asteroids Rust Implementation - Jacob Marshall")
+                    .titlebar(true)
+                    .ui(&mut root_ui(), |ui| {
+                        if Button::new("Play Game").size(button_size).position(vec2(
+                            10., 10.,
+                        )).ui(ui) {
+                            game = Some(AsteroidsGame::new(game_id.clone(), GameType::Zen));
+                            game_state = GameState::Playing;
+                        }
+                    });
+            },
+            GameState::Playing => {
+                if let Some(ref mut game_instance) = game {
+                    match AsteroidsGame::play(game_instance) {
+                        GameOutcome::Lose => game_state = GameState::GameOver,
+                        GameOutcome::Quit => game_state = GameState::MainMenu,
+                        GameOutcome::ScorePoint => {
+                            score_point(&game_id, &player_id);
+                            game_instance.increment_score()
+                        },
+                        GameOutcome::Continue => ()
+                    }
+                } else {
+                    // This should never happen, but just in case:
                     game_state = GameState::MainMenu;
                 }
-
-                {
-                    let text: &str = &format!("{}", score);
-                    let font_size = 64.;
-
-                    let text_size = measure_text(text, None, font_size as _, 1.0);
-                    draw_text(text, 16., 16. + text_size.height, font_size, WHITE);
-                }
-
-                let frame_t = get_time();
-
-                bullets.retain(|bullet| bullet.shot_at + 1.5 > frame_t);
-
-                if asteroids.len() < 10 {
-                    for _ in 0..10 {
-                        asteroids.push(Asteroid::new(AsteroidPosition::Center))
-                    }
-                }
-                for asteroid in asteroids.iter() {
-                    asteroid.draw()
-                }
-                for asteroid in asteroids.iter_mut() {
-                    asteroid.update_position()
-                }
-
-                for bullet in bullets.iter() {
-                    bullet.draw();
-                }
-                for bullet in bullets.iter_mut() {
-                    bullet.update_position();
-                }
-
-                let mut new_asteroids = Vec::new();
-                for asteroid in asteroids.iter_mut() {
-                    // Asteroid/ship collision
-                    if (asteroid.position - player.position).length() < asteroid.size + PLAYER_HEIGHT / 3. {
-                        game_state = GameState::GameOver;
-                        break;
-                    }
-
-                    // Asteroid/bullet collision
-                    for bullet in bullets.iter_mut() {
-                        if (asteroid.position - bullet.position).length() < asteroid.size {
-                            asteroid.collided = true;
-                            bullet.collided = true;
-
-                            score += 1;
-
-                            // Break the asteroid
-                            asteroid.get_hit_and_split(bullet, &mut new_asteroids);
-                            break;
-                        }
-                    }
-                }
-
-                // Remove the collided objects
-                bullets.retain(|bullet| bullet.shot_at + 1.5 > frame_t && !bullet.collided);
-                asteroids.retain(|asteroid| !asteroid.collided);
-                asteroids.append(&mut new_asteroids);
-
             }
             GameState::GameOver => {
                 if is_key_pressed(KeyCode::Space) {
@@ -112,28 +81,7 @@ async fn main() {
                     DARKGRAY,
                 );
             }
-            _ => {
-                let window_size = vec2(542., 430.);
-                let button_size = vec2(window_size.x - 20., 50.);
-
-                widgets::Window::new(hash!(), vec2(
-                    screen_width() / 2.0 - window_size.x / 2.0,
-                    screen_height() / 2.0 - window_size.y / 2.0,
-                ), window_size)
-                    .label("Asteroids Rust Implementation - Jacob Marshall")
-                    .titlebar(true)
-                    .ui(&mut root_ui(), |ui| {
-                        if Button::new("Play Game").size(button_size).position(vec2(
-                            10., 10.
-                        )).ui(ui) {
-                            asteroids.clear();
-                            bullets.clear();
-                            player.reset();
-                            score = 0;
-                            game_state = GameState::Playing;
-                        }
-                    });
-            }
+            _ => ()
         }
 
         next_frame().await;
